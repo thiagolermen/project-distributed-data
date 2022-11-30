@@ -20,10 +20,24 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 	
 	// lookup in the name server
 	public static SharedObject lookup(String name) {
+		try{
+			// get the stub of the server object from the rmiregistry
+			SharedObject obj = (SharedObject) Naming.lookup("//localhost");
+			return obj;
+		}catch (Exception e){
+			return null;
+		}
 	}		
 	
 	// binding in the name server
 	public static void register(String name, SharedObject_itf so) {
+		try{
+			// get the stub of the server object from the rmiregistry
+			SharedObject obj = (SharedObject) Naming.lookup("//localhost");
+			return obj;
+		}catch (Exception e){
+			return null;
+		}
 	}
 
 	// creation of a shared object
