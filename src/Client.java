@@ -1,9 +1,14 @@
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.Hashtable;
+import java.util.Map;
 import java.rmi.registry.*;
 import java.net.*;
+import java.net.UnknownHostException;
 
 public class Client extends UnicastRemoteObject implements Client_itf {
+
+	private static Map<Integer, SharedObject> cachedObjects;
 
 	public Client() throws RemoteException {
 		super();
@@ -15,28 +20,38 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 ///////////////////////////////////////////////////
 
 	// initialization of the client layer
-	public static void init() {
+	public static void init(){
+		cachedObjects = new Hashtable<>();
+		int port = 4000; 
+		String URL;
+		try {
+			URL = "//" + InetAddress.getLocalHost().getHostName() + ":" + port + "/server";
+			// get the stub of the server object from the rmiregistry
+			Server_itf server = new Server();
+			server = (Server_itf) Naming.lookup(URL);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
 	// lookup in the name server
 	public static SharedObject lookup(String name) {
-		try{
-			// get the stub of the server object from the rmiregistry
-			SharedObject obj = (SharedObject) Naming.lookup("//localhost");
-			return obj;
-		}catch (Exception e){
-			return null;
+		try {
+			int id = server.lookup(name);
+			return cachedObjects.get(id);
+			// TODO: if exists in server but doest exist in cache, put object in cache 
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+		return null;
 	}		
 	
 	// binding in the name server
 	public static void register(String name, SharedObject_itf so) {
-		try{
-			// get the stub of the server object from the rmiregistry
-			SharedObject obj = (SharedObject) Naming.lookup("//localhost");
-			return obj;
-		}catch (Exception e){
-			return null;
+		try {
+			server.register(name, );
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 

@@ -4,30 +4,51 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Server extends UnicastRemoteObject implements Server_itf {
 
+	private Map<String, ServerObject> serverObjects;
+	private static Integer currId = 0;
+
 	protected Server() throws RemoteException {
 		super();
-		//TODO Auto-generated constructor stub
+		this.serverObjects = new HashMap<>();
 	}
 
 	@Override
 	public int lookup(String name) throws RemoteException {
-		// TODO Auto-generated method stub
-		return 0;
+
+		try {
+			ServerObject found_object = serverObjects.get(name);
+			if (found_object != null){
+				return found_object.getId();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+
+		return -1;
 	}
 
 	@Override
 	public void register(String name, int id) throws RemoteException {
-		// TODO Auto-generated method stub
-
+		try {
+			serverObjects.put(name, new ServerObject(id));
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public int create(Object o) throws RemoteException {
-		// TODO Auto-generated method stub
-		return 0;
+		try {
+			serverObjects.put("", o);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
@@ -40,6 +61,14 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 	public Object lock_write(int id, Client_itf client) throws RemoteException {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	public Map<String, ServerObject> getServerObjects() {
+		return serverObjects;
+	}
+
+	public void setServerObjects(Map<String, ServerObject> serverObjects) {
+		this.serverObjects = serverObjects;
 	}
 	
 	public static void main(String args[]) {
