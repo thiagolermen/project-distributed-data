@@ -45,10 +45,14 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 	@Override
 	public int create(Object o) throws RemoteException {
 		try {
-			serverObjects.put("", o);
+			serverObjects.put("", (ServerObject) o);
+			Server.currId++;
+			return currId;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+
+		return -1;
 	}
 
 	@Override

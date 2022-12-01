@@ -9,6 +9,7 @@ import java.net.UnknownHostException;
 public class Client extends UnicastRemoteObject implements Client_itf {
 
 	private static Map<Integer, SharedObject> cachedObjects;
+	private static Server_itf server;
 
 	public Client() throws RemoteException {
 		super();
@@ -27,7 +28,7 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		try {
 			URL = "//" + InetAddress.getLocalHost().getHostName() + ":" + port + "/server";
 			// get the stub of the server object from the rmiregistry
-			Server_itf server = new Server();
+			server = new Server();
 			server = (Server_itf) Naming.lookup(URL);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -49,7 +50,9 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 	// binding in the name server
 	public static void register(String name, SharedObject_itf so) {
 		try {
-			server.register(name, );
+			int id = ((SharedObject) so).getId();
+			server.register(name, id);
+			cachedObjects.put(id, (SharedObject) so);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -57,6 +60,13 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 
 	// creation of a shared object
 	public static SharedObject create(Object o) {
+		try {
+			int id = server.create(o);
+			return new SharedObject(id);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 /////////////////////////////////////////////////////////////
