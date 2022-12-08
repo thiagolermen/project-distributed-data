@@ -3,11 +3,11 @@ import java.io.*;
 public class ServerObject implements Serializable, SharedObject_itf {
 	
     private Integer id;
-    private Lock lockState;
+    private Lock state;
     
     public ServerObject(Integer id){
         this.id = id;
-        this.lockState = Lock.NL;
+        this.state = Lock.NL;
     }
 
 	// invoked by the user program on the client node
@@ -31,11 +31,11 @@ public class ServerObject implements Serializable, SharedObject_itf {
         this.id = id;
     }
 
-    public Lock getLockState() {
-        return lockState;
+    public Lock getState() {
+        return state;
     }
 
-    public void setLockState(Lock lockState) {
-        this.lockState = lockState;
+    public void setState(Lock state) {
+        this.state = state;
     }
 }

@@ -75,6 +75,14 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 
 	// request a read lock from the server
 	public static Object lock_read(int id) {
+		SharedObject obj =  cachedObjects.get(id);
+		
+		if (obj == null) {
+			obj = server.lock_read(id, this);
+		}else {			
+			obj.lock_read();
+		}
+		return obj.state;
 	}
 
 	// request a write lock from the server
