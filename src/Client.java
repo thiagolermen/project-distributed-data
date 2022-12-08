@@ -78,7 +78,7 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		SharedObject obj =  cachedObjects.get(id);
 		
 		if (obj == null) {
-			obj = server.lock_read(id, this);
+			obj = server.lock_read(id, );
 		}else {			
 			obj.lock_read();
 		}
@@ -102,4 +102,6 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 	// receive a writer invalidation request from the server
 	public Object invalidate_writer(int id) throws java.rmi.RemoteException {
 	}
+	
+	
 }

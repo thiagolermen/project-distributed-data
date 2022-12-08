@@ -9,7 +9,7 @@ import java.util.Map;
 
 public class Server extends UnicastRemoteObject implements Server_itf {
 
-	private Map<String, ServerObject> serverObjects;
+	private Map<String, Object> serverObjects;
 	private static Integer currId = 0;
 
 	protected Server() throws RemoteException {
