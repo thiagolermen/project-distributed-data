@@ -2,10 +2,12 @@ import java.io.*;
 
 public class ServerObject implements Serializable, SharedObject_itf {
 	
-    private Integer id;
+	// Object's server ID
+    private int id;
+    // The current lock state of the object
     private Lock state;
     
-    public ServerObject(Integer id){
+    public ServerObject(int id, Object o){
         this.id = id;
         this.state = Lock.NL;
     }
@@ -23,11 +25,11 @@ public class ServerObject implements Serializable, SharedObject_itf {
 	}
 
     // Getters and setters
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
