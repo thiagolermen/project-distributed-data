@@ -72,13 +72,21 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 	}
 
 	public Object lock_read(int id, Client_itf client) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		ServerObject so = this.serverObjects.get(id);
+		Object obj = null;
+		if (so != null) {
+			obj = so.lock_read(client);
+		}
+		return obj;
 	}
 
 	public Object lock_write(int id, Client_itf client) throws RemoteException {
-		// TODO Auto-generated method stub
-		return null;
+		ServerObject so = this.serverObjects.get(id);
+		Object obj = null;
+		if (so != null) {
+			obj = so.lock_write(client);
+		}
+		return obj;
 	}
 	
 	public static void main(String args[]) {
