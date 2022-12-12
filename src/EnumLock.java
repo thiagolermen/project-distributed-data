@@ -1,4 +1,7 @@
 enum Lock {
+	F, // Free state
+	RL, // Read lock state
+	WL, // Write lock state
     NL, // No local lock
     RLC, // Read lock cached (not taken)
     WLC, // Write lock cached
