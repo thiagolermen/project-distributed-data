@@ -35,8 +35,6 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-
-
 		return id;
 	}
 
@@ -48,7 +46,7 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 					registry.put(name, foundObject);		
 				}
 			} else {
-				System.out.println("No ServerObject with ID : " + id  + " found");
+				System.err.println("No ServerObject with ID : " + id  + " found");
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -74,8 +72,16 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 	public Object lock_read(int id, Client_itf client) throws RemoteException {
 		ServerObject so = this.serverObjects.get(id);
 		Object obj = null;
-		if (so != null) {
-			obj = so.lock_read(client);
+		try {
+			
+			if (so != null) {
+				obj = so.lock_read(client);
+			} else {
+				System.err.println("No ServerObject with ID : " + id  + " found");
+			}
+			
+		}catch (Exception e){
+			e.printStackTrace();
 		}
 		return obj;
 	}
@@ -83,8 +89,16 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 	public Object lock_write(int id, Client_itf client) throws RemoteException {
 		ServerObject so = this.serverObjects.get(id);
 		Object obj = null;
-		if (so != null) {
-			obj = so.lock_write(client);
+		try {
+			
+			if (so != null) {
+				obj = so.lock_write(client);
+			} else {
+				System.err.println("No ServerObject with ID : " + id  + " found");
+			}
+			
+		} catch (Exception e){
+			e.printStackTrace();
 		}
 		return obj;
 	}
@@ -95,7 +109,7 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 		 String name = "/server";
 		 try {
 			 // Launching the naming service – rmiregistry – within the JVM
-			 Registry registry = LocateRegistry.createRegistry(port);
+			 LocateRegistry.createRegistry(port);
 			 
 			 // Create an instance of the server object
 			 Server server = new Server();

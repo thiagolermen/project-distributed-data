@@ -27,22 +27,18 @@ public class ServerObject implements Serializable {
 	// invoked by the user program on the client node
 	public synchronized Object lock_read(Client_itf client) {
 		
-		// The current Client demands reading
-		this.readers.add(client);
-		
 		if (this.state == Lock.WL) {
 			
 			// It must lock reduce for all write_lock clients
 			try {
-				obj = writer.reduce_lock(this.id); // The writer will stop writing
-				this.readers.add(this.writer);
+				obj = writer.reduce_lock(this.id); // Blocking call for the client
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			
-			this.writer = null;
+			this.readers.add(client); // The client becomes a reader
+			this.readers.add(this.writer); // The previous writer becomes a reader
+			this.writer = null; // There is no more writer
 			this.state = Lock.RL;
-			
 		}
 		return obj;
 	}
@@ -50,28 +46,26 @@ public class ServerObject implements Serializable {
 	// invoked by the user program on the client node
 	public synchronized Object lock_write(Client_itf client) {
 		
-		// Client demanding lock_write, all readers should be invalidated and set cleared
-		for (Client_itf c : this.readers) {
-			try {
-				c.invalidate_reader(this.id);
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-		this.readers.clear();
-		
 		// Client demanding lock_write, the current writer should be invalidated updated to the Client
 		if (this.writer != null) {
 			
 			try {
-				
-				this.obj = writer.invalidate_writer(this.id);
+				this.obj = writer.invalidate_writer(this.id); // Blocking call
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		} else {
+			// Client demanding lock_write, all readers should be invalidated and set cleared
+			for (Client_itf c : this.readers) {
+				try {
+					c.invalidate_reader(this.id); // Blocking call for the client
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}
+			this.readers.clear();
+			this.state = Lock.WL;
 		}
-		
-		this.state = Lock.WL;
 		this.writer = client;
 		return obj;
 	}
