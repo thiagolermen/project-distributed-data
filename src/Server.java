@@ -118,7 +118,7 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 			 URL = "//" + InetAddress.getLocalHost().getHostName() + ":" + port + name;
 			 Naming.rebind(URL, server);
 			 
-			 System.out.println("Server '"+ name +"' bound in registry");
+			 System.out.println("Server '"+ URL +"' bound in registry");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
