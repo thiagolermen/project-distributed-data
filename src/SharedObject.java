@@ -47,7 +47,7 @@ public class SharedObject implements Serializable, SharedObject_itf {
 				
 			}
 		}
-		
+		System.out.println("askTpServer " + askToServer);
 		if (askToServer) {
 			this.obj = Client.lock_read(this.id);
 		}
@@ -76,6 +76,8 @@ public class SharedObject implements Serializable, SharedObject_itf {
 				this.state = Lock.WLT;
 				break;
 			case RLC:
+				//demander le verrou
+				askToServer = true;
 				this.state = Lock.WLT;
 				break;
 			case WLC:
@@ -220,6 +222,13 @@ public class SharedObject implements Serializable, SharedObject_itf {
 			break;
 			
 		case RLT_WLC:
+			while (this.state == Lock.RLT_WLC) {
+				try {
+					this.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			this.state = Lock.NL;
 			break;
 			

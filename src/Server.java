@@ -43,7 +43,7 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 			ServerObject foundObject = serverObjects.get(id);
 			if (foundObject != null) {
 				synchronized (this) {
-					registry.put(name, foundObject);		
+					registry.put(name, foundObject);
 				}
 			} else {
 				System.err.println("No ServerObject with ID : " + id  + " found");

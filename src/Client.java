@@ -49,16 +49,8 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 			if(id != -1) {
 				Object obj = lock_read(id);
 				so = new SharedObject(id, obj);
-				so.unlock();
+				so.unlock();;
 				cachedObjects.put(id, so);
-//				// If SharedObject in cache,
-//				// TODO: else retrieve from server
-//				if (so != null) {
-//					return so;
-//				} else {
-//					System.out.println("Object not found in cache");
-//					server.
-//				}
 			} else {
 				System.err.println("No Object with ID : " + id  + " found in cache");
 			}
@@ -86,6 +78,7 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		try {
 			int id = server.create(o);
 			so = new SharedObject(id, o);
+			cachedObjects.put(so.getId(), so);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
