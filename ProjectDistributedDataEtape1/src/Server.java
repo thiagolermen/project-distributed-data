@@ -31,6 +31,7 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 			ServerObject foundObject = registry.get(name);
 			if (foundObject != null){
 				id = foundObject.getId();
+				System.out.println("ID FOUND LOOKUP SERVER: " + id);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -43,7 +44,8 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 			ServerObject foundObject = serverObjects.get(id);
 			if (foundObject != null) {
 				synchronized (this) {
-					registry.put(name, foundObject);		
+					registry.put(name, foundObject);
+					System.out.println("NAME REGISTER: " + name);
 				}
 			} else {
 				System.err.println("No ServerObject with ID : " + id  + " found");
@@ -61,8 +63,10 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 				this.currId++;
 				ServerObject so = new ServerObject(id, o);
 				serverObjects.put(id, so);
+				System.out.println("ID CREATE: " + id);
 			}
 		} catch (Exception e) {
+			System.out.println("--------------------------------------------");
 			e.printStackTrace();
 		}
 
@@ -75,6 +79,7 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 		try {
 			
 			if (so != null) {
+				System.out.println("Server LOCK READ ID - CLIENT " + id + " - " + client);
 				obj = so.lock_read(client);
 			} else {
 				System.err.println("No ServerObject with ID : " + id  + " found");

@@ -3,10 +3,10 @@ import java.io.*;
 public class SharedObject implements Serializable, SharedObject_itf {
 	
 	private static final long serialVersionUID = 899922328733830816L;
-	private Integer id;
-	public boolean waiting;
-	public Object obj;
-	public Lock state;
+	private Integer id; // The id of the shared object
+	public boolean waiting; // Permits to know if a thread should wait or not (synchronization)
+	public Object obj; // General reference to object of a given application
+	public Lock state; // Current lock state of the shared object
 
 	public SharedObject(int id, Object obj){
         this.id = id;
@@ -15,13 +15,16 @@ public class SharedObject implements Serializable, SharedObject_itf {
 		this.state = Lock.NL;
 	}
 
-	// invoked by the user program on the client node
+	
+	/**
+	 * Invoked by the user program on the client node once it demands for a read lock
+	 */
 	public void lock_read() {
-		
 		boolean askToServer = false;
 		
 		synchronized (this) {
-		
+			
+			// Waits while a client has the lock is taken
 			while (this.waiting) {
 				try {
 					this.wait();
@@ -32,7 +35,7 @@ public class SharedObject implements Serializable, SharedObject_itf {
 			
 			switch (this.state) {
 			case NL:
-				//demander le verrou
+				// ask for the lock
 				askToServer = true;
 				this.state = Lock.RLT;
 				break;
@@ -54,13 +57,17 @@ public class SharedObject implements Serializable, SharedObject_itf {
 		
 	}
 
-	// invoked by the user program on the client node
-	public void lock_write() {
+	/**
+	 * Invoked by the user program on the client node once it demands for a write lock
+	 */
+	public void lock_write() { 
 		
+		// Determines if the Client should demand the server for the write lock
 		boolean askToServer = false;
 		
 		synchronized (this) {
 			
+			// Waits while a client has the lock is taken
 			while (this.waiting) {
 				try {
 					this.wait();
@@ -71,11 +78,13 @@ public class SharedObject implements Serializable, SharedObject_itf {
 			
 			switch (this.state) {
 			case NL:
-				//demander le verrou
+				// ask for the lock
 				askToServer = true;
 				this.state = Lock.WLT;
 				break;
 			case RLC:
+				// ask for the lock
+				askToServer = true;
 				this.state = Lock.WLT;
 				break;
 			case WLC:
@@ -93,12 +102,15 @@ public class SharedObject implements Serializable, SharedObject_itf {
 		
 	}
 
-	// invoked by the user program on the client node
+
+	/**
+	 * 	Invoked by the user program on the client node once it demands for an unlock lock
+	 */
 	public synchronized void unlock() {
 		
 		switch (this.state) {
 		case RLT:
-			//demander le verrou 
+			// ask for the lock 
 			this.state = Lock.RLC;
 			break;
 		case WLT:
@@ -120,15 +132,21 @@ public class SharedObject implements Serializable, SharedObject_itf {
 		
 	}
 
-	// callback invoked remotely by the server
+	/**
+	 * Callback invoked remotely by the server
+	 * It is a blocking call for clients that are demanding the lock
+	 * @return the general reference to object of the application
+	 */
 	public synchronized Object reduce_lock() {
 		
+		// Blocks other processes
 		this.waiting = true;
 		
 		switch (this.state) {
 		
 		case WLT:
 			
+			// If there's a process that is currently writing the demands waits
 			while (this.state == Lock.WLT) {
 				try {
 					this.wait();
@@ -138,7 +156,6 @@ public class SharedObject implements Serializable, SharedObject_itf {
 			}
 			
 		case WLC:
-			
 			this.state = Lock.RLC;
 			break;
 			
@@ -151,6 +168,7 @@ public class SharedObject implements Serializable, SharedObject_itf {
 			
 		}
 		
+		// Unblocks other processes
 		this.waiting = false;
 		
 		try {
@@ -163,7 +181,10 @@ public class SharedObject implements Serializable, SharedObject_itf {
 		
 	}
 
-	// callback invoked remotely by the server
+	
+	/**
+	 * Callback invoked remotely by the server
+	 */
 	public synchronized void invalidate_reader() {
 		
 		this.waiting = true;
@@ -220,6 +241,13 @@ public class SharedObject implements Serializable, SharedObject_itf {
 			break;
 			
 		case RLT_WLC:
+			while (this.state == Lock.RLT_WLC) {
+				try {
+					this.wait();
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
 			this.state = Lock.NL;
 			break;
 			

@@ -22,7 +22,9 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 //         Interface to be used by applications
 ///////////////////////////////////////////////////
 
-	// initialization of the client layer
+	/**
+	 * Initialization of the client layer
+	 */
 	public static void init(){
 		Client.cachedObjects = new HashMap<Integer, SharedObject>();
 		int port = 4000; 
@@ -41,51 +43,62 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		}
 	}
 	
-	// lookup in the name server
+	
+	/**
+	 * Lookup in the name server
+	 * @param name the name of the object that will be searched
+	 * @return the object that were found in the server with the given name, or null if it wasn't found
+	 */
 	public static SharedObject lookup(String name) {
 		SharedObject so = null;
 		try {
 			int id = server.lookup(name);
+			
+			// If the given name was found in the server of objects
 			if(id != -1) {
+				// Demands for a read lock - Synchronized method
 				Object obj = lock_read(id);
 				so = new SharedObject(id, obj);
 				so.unlock();
+				// Includes the object in the cache of the client
 				cachedObjects.put(id, so);
-//				// If SharedObject in cache,
-//				// TODO: else retrieve from server
-//				if (so != null) {
-//					return so;
-//				} else {
-//					System.out.println("Object not found in cache");
-//					server.
-//				}
 			} else {
 				System.err.println("No Object with ID : " + id  + " found in cache");
 			}
+			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		return so;
 	}		
 	
-	// binding in the name server
+	
+	/**
+	 * Binding in the name server
+	 * @param name the name of the object that will be searched in the server
+	 * @param so the object that will be registered
+	 */
 	public static void register(String name, SharedObject_itf so) {
 		try {
 			int id = ((SharedObject) so).getId();
 			server.register(name, id);
-			// we uncomment the line below if we can have shared objects without its names
-			// cachedObjects.put(id, (SharedObject) so);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
-	// creation of a shared object
+	
+	/**
+	 * Creation of a shared object
+	 * @param o 
+	 * @return
+	 */
 	public static SharedObject create(Object o) {
 		SharedObject so = null;
 		try {
 			int id = server.create(o);
 			so = new SharedObject(id, o);
+			cachedObjects.put(so.getId(), so);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -96,7 +109,11 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 //    Interface to be used by the consistency protocol
 ////////////////////////////////////////////////////////////
 
-	// request a read lock from the server
+	/**
+	 * Request a read lock from the serve
+	 * @param id
+	 * @return
+	 */
 	public static Object lock_read(int id) {
 		Object obj =  null;
 		try {
@@ -107,7 +124,12 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		return obj;
 	}
 
-	// request a write lock from the server
+	
+	/**
+	 * Request a write lock from the server
+	 * @param id
+	 * @return
+	 */
 	public static Object lock_write (int id) {	
 		Object obj =  null;
 		try {
@@ -118,13 +140,18 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		return obj;	
 	}
 
-	// receive a lock reduction request from the server
+	
+	/**
+	 * Receive a lock reduction request from the server
+	 */
 	public Object reduce_lock(int id) throws java.rmi.RemoteException {
 		return cachedObjects.get(id).reduce_lock();
 	}
 
-
-	// receive a reader invalidation request from the server
+	
+	/**
+	 * Receive a reader invalidation request from the server
+	 */
 	public void invalidate_reader(int id) throws java.rmi.RemoteException {
 		cachedObjects.get(id).invalidate_reader();
 	}

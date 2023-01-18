@@ -18,7 +18,7 @@ public class ServerObject implements Serializable {
     
     public ServerObject(int id, Object o){
         this.id = id;
-        this.state = Lock.F;
+        this.state = Lock.NL;
         this.obj = o;
         this.writer = null;
         this.readers = new HashSet<Client_itf>();
@@ -26,20 +26,22 @@ public class ServerObject implements Serializable {
 
 	// invoked by the user program on the client node
 	public synchronized Object lock_read(Client_itf client) {
-		
 		if (this.state == Lock.WL) {
 			
 			// It must lock reduce for all write_lock clients
 			try {
+				System.out.println("ServerObject (WL - lock) LOCK READ ID - CLIENT " + this.id + " - " + client);
 				obj = writer.reduce_lock(this.id); // Blocking call for the client
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			this.readers.add(client); // The client becomes a reader
-			this.readers.add(this.writer); // The previous writer becomes a reader
-			this.writer = null; // There is no more writer
-			this.state = Lock.RL;
+			
+			this.readers.add(this.writer); // The previous writer becomes a reader	
 		}
+		this.writer = null; // There is no more writer
+		this.readers.add(client); // The client becomes a reader
+		this.state = Lock.RL;
+		
 		return obj;
 	}
 
@@ -55,6 +57,9 @@ public class ServerObject implements Serializable {
 				e.printStackTrace();
 			}
 		} else {
+			
+			this.readers.remove(client);
+			
 			// Client demanding lock_write, all readers should be invalidated and set cleared
 			for (Client_itf c : this.readers) {
 				try {
@@ -63,10 +68,14 @@ public class ServerObject implements Serializable {
 					e.printStackTrace();
 				}
 			}
-			this.readers.clear();
-			this.state = Lock.WL;
 		}
+		// There's no longer readers
+		this.readers.clear();
+		// The current client becomes the writer
 		this.writer = client;
+		// Changes the lock to WL
+		this.state = Lock.WL;
+		
 		return obj;
 	}
 
