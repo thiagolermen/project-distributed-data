@@ -1,12 +1,5 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.rmi.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.lang.*;
-import java.rmi.registry.*;
-
 
 public class Irc extends Frame {
 	public TextArea		text;
@@ -76,7 +69,7 @@ class readListener implements ActionListener {
 		irc.sentence.lock_read();
 		
 		// invoke the method
-		String s = ((Sentence)(irc.sentence.obj)).read();
+		String s = irc.sentence.read();
 		
 		// unlock the object
 		irc.sentence.unlock();
@@ -100,7 +93,7 @@ class writeListener implements ActionListener {
 		irc.sentence.lock_write();
 		
 		// invoke the method
-		((Sentence)(irc.sentence.obj)).write(Irc.myName+" wrote "+s);
+		irc.sentence.write(Irc.myName+" wrote "+s);
 		irc.data.setText("");
 		
 		// unlock the object

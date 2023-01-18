@@ -9,7 +9,7 @@ public class StubGenerator {
 		try {
 			createStub(Class.forName(args[0]));
 		} catch (Exception e) {
-			System.err.println("Error during stub creation");
+			System.err.println("Error during stub creation - use java StubGenerator <name_class>");
 			e.printStackTrace();
 		}
 	}
