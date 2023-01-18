@@ -2,6 +2,7 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class Irc extends Frame {
+	private static final long serialVersionUID = -7291886882002628689L;
 	public TextArea		text;
 	public TextField	data;
 	Sentence_itf		sentence;
