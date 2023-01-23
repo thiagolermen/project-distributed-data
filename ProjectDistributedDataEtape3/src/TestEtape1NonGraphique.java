@@ -31,7 +31,7 @@ public class TestEtape1NonGraphique {
         while (true) {
             numBoucles++;
             // Random selection of the tested object
-            int numObj = rand.nextInt(5);
+            int numObj = rand.nextInt(1);
             Sentence_itf so = (Sentence_itf) Client.lookup("IRC");
             
             //System.out.println("État de l'objet " + numObj + " pour le client "+TestEtape1NonGraphique.myName + " = "+so.getState());
