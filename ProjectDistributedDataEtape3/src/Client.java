@@ -35,6 +35,8 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 			Client.server = (Server_itf) Naming.lookup(URL);
 			// Initialize the Client
 			Client.client = new Client();
+			// Sets the type of deserialization as Client to Server
+			NatureDeserializator.setNatureDeserializator(NatureDeserializator.NatDes.CLIENT);
 		} catch (Exception e) {
 			System.err.println("Error during client layer initialization");
 			e.printStackTrace();
