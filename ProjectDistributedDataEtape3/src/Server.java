@@ -19,6 +19,8 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 		this.currId = 0; // Just a convention
 		this.serverObjects = new HashMap<Integer, ServerObject>();
 		this.serverRegistry = new HashMap<String, ServerObject>();
+		// Sets the type of deserialization as Client to Server
+		NatureDeserializator.setNatureDeserializator(NatureDeserializator.NatDes.SERVER);
 	}
 
 	/**

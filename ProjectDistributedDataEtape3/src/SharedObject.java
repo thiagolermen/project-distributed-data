@@ -262,9 +262,27 @@ public class SharedObject implements Serializable, SharedObject_itf {
 		}
 		return this.obj;
 	}
-
+	
+	/**
+	 * Provides eventual specific treatment during the deserialization from the client side
+	 * @return shared object with id == this.id
+	 * @throws ObjectStreamException
+	 */
+	protected Object readResolve() throws ObjectStreamException{
+		// If the current call of deserialization is type Server to client, just return the current object
+		if (NatureDeserializator.getNatureDeserializator() == NatureDeserializator.NatDes.SERVER) {
+			return this;	
+		} else {			
+			// Check if object stub already exists, if not creates a new one and returns it
+			SharedObject so = Client.getStub(this.id);
+			if (so == null) {
+				so = Client.generateStub(getId(), so);
+			}
+			return so;
+		}
+	}
+	
 	// Getters and setters
-
 	public int getId() {
 		return id;
 	}
@@ -272,8 +290,5 @@ public class SharedObject implements Serializable, SharedObject_itf {
 	public void setId(int id) {
 		this.id = id;
 	}
-	
-	public Lock getState() {
-		return this.state;
-	}
+
 }

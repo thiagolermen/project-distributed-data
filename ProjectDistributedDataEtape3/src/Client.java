@@ -181,6 +181,7 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		try {
 			
 			// Creates the class stub based on the Object o class name (For example MyClass_stub)
+            System.out.println("Nom Classe : "+ Class.forName(obj.getClass().getName() + "_stub"));
 			Class<?> stub = Class.forName(obj.getClass().getName() + "_stub");
 			
 			// Get the constructor of the stub class with their parameters (id and object)

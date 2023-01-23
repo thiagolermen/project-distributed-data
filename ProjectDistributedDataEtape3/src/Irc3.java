@@ -1,14 +1,8 @@
 import java.awt.*;
 import java.awt.event.*;
-import java.rmi.*;
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.lang.*;
-import java.rmi.registry.*;
 
-
-public class Irc extends Frame {
+public class Irc3 extends Frame {
+	private static final long serialVersionUID = -7291886882002628689L;
 	public TextArea		text;
 	public TextField	data;
 	Sentence_itf		sentence;
@@ -17,7 +11,7 @@ public class Irc extends Frame {
 	public static void main(String argv[]) {
 		
 		if (argv.length != 1) {
-			System.out.println("java Irc <name>");
+			System.out.println("java Irc3 <name>");
 			return;
 		}
 		myName = argv[0];
@@ -33,10 +27,10 @@ public class Irc extends Frame {
 			Client.register("IRC", s);
 		}
 		// create the graphical part
-		new Irc(s);
+		new Irc3(s);
 	}
 
-	public Irc(Sentence_itf s) {
+	public Irc3(Sentence_itf s) {
 	
 		setLayout(new FlowLayout());
 	
@@ -66,8 +60,8 @@ public class Irc extends Frame {
 
 
 class readListener implements ActionListener {
-	Irc irc;
-	public readListener (Irc i) {
+	Irc3 irc;
+	public readListener (Irc3 i) {
 		irc = i;
 	}
 	public void actionPerformed (ActionEvent e) {
@@ -76,7 +70,7 @@ class readListener implements ActionListener {
 		irc.sentence.lock_read();
 		
 		// invoke the method
-		String s = ((Sentence)(irc.sentence.obj)).read();
+		String s = irc.sentence.read();
 		
 		// unlock the object
 		irc.sentence.unlock();
@@ -87,8 +81,8 @@ class readListener implements ActionListener {
 }
 
 class writeListener implements ActionListener {
-	Irc irc;
-	public writeListener (Irc i) {
+	Irc3 irc;
+	public writeListener (Irc3 i) {
         	irc = i;
 	}
 	public void actionPerformed (ActionEvent e) {
@@ -100,7 +94,7 @@ class writeListener implements ActionListener {
 		irc.sentence.lock_write();
 		
 		// invoke the method
-		((Sentence)(irc.sentence.obj)).write(Irc.myName+" wrote "+s);
+		irc.sentence.write(Irc3.myName+" wrote "+s);
 		irc.data.setText("");
 		
 		// unlock the object
