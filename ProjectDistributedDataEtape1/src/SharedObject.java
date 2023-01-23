@@ -67,7 +67,7 @@ public class SharedObject implements Serializable, SharedObject_itf {
 	}
 
 	/**
-	 * Invoked by the user program on the client node once it demands for a write lock
+	 * lock_write request by client
 	 */
 	public void lock_write() { 
 		Lock aux_state = null;
@@ -118,7 +118,7 @@ public class SharedObject implements Serializable, SharedObject_itf {
 	}
 
 	/**
-	 * 	Invoked by the user program on the client node once it demands to put a lock in cache. Synchronization is necessary to ensure the consistancy of the state of the shared object
+	 * 	unlock request by client. Synchronization is necessary to ensure the consistancy of the state of the shared object
 	 */
 	public synchronized void unlock() {
 		switch (this.state) {
@@ -144,7 +144,7 @@ public class SharedObject implements Serializable, SharedObject_itf {
 	}
 
 	/**
-	 * Callback invoked remotely by the server. Synchronization is necessary to ensure the consistency of the state of the shared object
+	 * reduce_lock request by server. Synchronization is necessary to ensure the consistency of the state of the shared object
 	 * It is a blocking call for clients that are demanding the lock
 	 * @return the general reference to object of the application
 	 */
@@ -184,7 +184,7 @@ public class SharedObject implements Serializable, SharedObject_itf {
 	}
 
 	/**
-	 * Callback invoked remotely by the server. Synchronization is necessary to ensure the consistency of the state of the shared object
+	 * invalidate_reader request by server. Synchronization is necessary to ensure the consistency of the state of the shared object
 	 */
 	public synchronized void invalidate_reader() {
 		// Essential for synchronization. Helps to ensure no interference between lock requests and lock invalidations
@@ -217,7 +217,7 @@ public class SharedObject implements Serializable, SharedObject_itf {
 	}
 
 	/**
-	 * ... Synchronization is necessary to ensure the consistancy of the state of the shared object
+	 * invalidate_writer request by server. Synchronization is necessary to ensure the consistancy of the state of the shared object
 	 * @return
 	 */
 	public synchronized Object invalidate_writer() {

@@ -35,8 +35,6 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 			Client.server = (Server_itf) Naming.lookup(URL);
 			// Initialize the Client
 			Client.client = new Client();
-			// Sets the type of deserialization as Client to Server
-			NatureDeserializator.setNatureDeserializator(NatureDeserializator.NatDes.CLIENT);
 		} catch (Exception e) {
 			System.err.println("Error during client layer initialization");
 			e.printStackTrace();
@@ -183,6 +181,7 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		try {
 			
 			// Creates the class stub based on the Object o class name (For example MyClass_stub)
+            System.out.println("Nom Classe : "+ Class.forName(obj.getClass().getName() + "_stub"));
 			Class<?> stub = Class.forName(obj.getClass().getName() + "_stub");
 			
 			// Get the constructor of the stub class with their parameters (id and object)

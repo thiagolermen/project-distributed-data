@@ -33,8 +33,6 @@ public class TestEtape1NonGraphique {
             // Random selection of the tested object
             int numObj = rand.nextInt(5);
             SharedObject so = Client.lookup("IRC"+numObj);
-            
-            //System.out.println("État de l'objet " + numObj + " pour le client "+TestEtape1NonGraphique.myName + " = "+so.getState());
 
             // Generates a random number -> 0 corresponds a read lock request and 1 a write lock request
             if (rand.nextInt(2) == 0) {
@@ -49,7 +47,7 @@ public class TestEtape1NonGraphique {
                 // lock the object in write mode
                 so.lock_write();
                 // invoke the method
-                ((Sentence)(so.obj)).write(TestEtape1NonGraphique.myName + " wrote daleson2" + numBoucles);
+                ((Sentence)(so.obj)).write(TestEtape1NonGraphique.myName + " wrote something in the loop " + numBoucles);
                 // unlock the object
                 so.unlock();
             }

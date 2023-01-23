@@ -6,7 +6,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 
 
-public class TestEtape1 extends JFrame {
+public class TestEtape3 extends JFrame {
 
 	private static final long serialVersionUID = -4313194228903001868L;
 	public TextArea text;
@@ -34,10 +34,10 @@ public class TestEtape1 extends JFrame {
 			Client.register("IRC", s);
 		}
 		// create the graphical part
-		new TestEtape1(s);
+		new TestEtape3(s);
 	}
 
-	public TestEtape1(SharedObject s) {
+	public TestEtape3(SharedObject s) {
 
 		setLayout(new FlowLayout());
 
@@ -63,21 +63,21 @@ public class TestEtape1 extends JFrame {
 }
 
 class StartListener implements ActionListener {
-	TestEtape1 irc;
+	TestEtape3 irc;
 	JButton start_button;
 
-	public StartListener(TestEtape1 i, JButton button) {
+	public StartListener(TestEtape3 i, JButton button) {
 		irc = i;
 		start_button = button;
 
 	}
 
 	public void actionPerformed(ActionEvent e) {
-		if (TestEtape1.flag == 0) {
+		if (TestEtape3.flag == 0) {
 			start_button.setText("Stop");
 			new Action(irc).start();
 		} else {
-			TestEtape1.flag = 0;
+			TestEtape3.flag = 0;
 			start_button.setText("Start");
 		}
 	}
@@ -85,19 +85,19 @@ class StartListener implements ActionListener {
 
 class Action extends Thread {
 
-	TestEtape1 irc;
+	TestEtape3 irc;
 	
 	static Random rand = new Random();
 
-	public Action(TestEtape1 irc) {
+	public Action(TestEtape3 irc) {
 		this.irc = irc;
 	}
 
 	@Override
 	public void run() {
-		TestEtape1.flag = 1;
+		TestEtape3.flag = 1;
 		int i = 0;
-		while (TestEtape1.flag == 1) {
+		while (TestEtape3.flag == 1) {
 			try {
 				sleep(10000 * ((long) Math.random()));
 			} catch (InterruptedException e) {

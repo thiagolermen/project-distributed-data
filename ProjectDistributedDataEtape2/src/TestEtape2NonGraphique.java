@@ -1,8 +1,7 @@
 import java.util.Random;
 
-public class TestEtape1NonGraphique {
+public class TestEtape2NonGraphique {
 
-	SharedObject sentence;
 	static String myName;
     static Random rand = new Random();
 
@@ -20,10 +19,10 @@ public class TestEtape1NonGraphique {
 		// look up the IRC object in the name server
 		// if not found, create it, and register it in the name server
         for (int i = 0; i < 5; i++) {
-        	Sentence_itf so = (Sentence_itf) Client.lookup("IRC");
+        	Sentence_itf so = (Sentence_itf) Client.lookup("IRC"+i);
             if (so == null) {
             	so = (Sentence_itf) Client.create(new Sentence());
-    			Client.register("IRC", so);
+    			Client.register("IRC"+i, so);
             }
         }
 
@@ -32,9 +31,7 @@ public class TestEtape1NonGraphique {
             numBoucles++;
             // Random selection of the tested object
             int numObj = rand.nextInt(5);
-            Sentence_itf so = (Sentence_itf) Client.lookup("IRC");
-            
-            //System.out.println("État de l'objet " + numObj + " pour le client "+TestEtape1NonGraphique.myName + " = "+so.getState());
+            Sentence_itf so = (Sentence_itf) Client.lookup("IRC"+numObj);
 
             // Generates a random number -> 0 corresponds a read lock request and 1 a write lock request
             if (rand.nextInt(2) == 0) {
@@ -49,7 +46,7 @@ public class TestEtape1NonGraphique {
                 // lock the object in write mode
                 so.lock_write();
                 // invoke the method
-                so.write(TestEtape1NonGraphique.myName + " wrote daleson2" + numBoucles);
+                so.write(TestEtape2NonGraphique.myName + " wrote something in the loop " + numBoucles);
                 // unlock the object
                 so.unlock();
             }

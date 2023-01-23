@@ -36,7 +36,7 @@ public class ServerObject implements Serializable {
 				// Blocking call, because if the lock is in taken mode, one has to wait for the running writer to finish what he wants to do with the object
 				obj = writer.reduce_lock(this.id); // Blocking call for the client
 			} catch (Exception e) {
-				System.err.println("Error when invalidating a writer to have a read lock");
+				//System.err.println("Error when invalidating a writer to have a read lock");
 				//e.printStackTrace();
 			}
 			// This is precisely the nuance of reducing the lock for the former writer instead of simply removing it 
