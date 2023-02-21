@@ -1,5 +1,6 @@
 import java.awt.*;
 import java.awt.event.*;
+import javax.swing.JOptionPane;
 
 
 public class Irc extends Frame {
@@ -19,7 +20,7 @@ public class Irc extends Frame {
 	
 		// initialize the system
 		Client.init();
-		
+
 		// look up the IRC object in the name server
 		// if not found, create it, and register it in the name server
 		SharedObject s = Client.lookup("IRC");
@@ -27,12 +28,17 @@ public class Irc extends Frame {
 			s = Client.create(new Sentence());
 			Client.register("IRC", s);
 		}
+		try {
+			Client.subscribe(-1, s.getId());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 		// create the graphical part
 		new Irc(s);
 	}
 
 	public Irc(SharedObject s) {
-	
+
 		setLayout(new FlowLayout());
 	
 		text=new TextArea(10,60);
@@ -49,12 +55,14 @@ public class Irc extends Frame {
 		Button read_button = new Button("read");
 		read_button.addActionListener(new readListener(this));
 		add(read_button);
-		
+
 		setSize(470,300);
 		text.setBackground(Color.black); 
 		show();
 		
 		sentence = s;
+
+
 	}
 }
 
@@ -99,14 +107,18 @@ class writeListener implements ActionListener {
 		irc.data.setText("");
 		try {
 			Client.notifyPublication(irc.sentence.getId());
-		} catch (Exception e) {
-			e.printStackTrace();
+			//default title and icon
+			//JOptionPane.showMessageDialog(irc, "Object with id " + irc.sentence.getId() + "has been changed.");
+		} catch (Exception exc) {
+			exc.printStackTrace();
 		}
 		
 		// unlock the object
 		irc.sentence.unlock();
+		try {
+			Client.subscribe(-1, irc.sentence.getId());
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
 	}
 }
-
-
-

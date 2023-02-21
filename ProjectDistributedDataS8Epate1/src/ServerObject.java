@@ -94,10 +94,17 @@ public class ServerObject implements Serializable {
 	/** Subscribe a client to the object adding a callback referencing the current object to the client
 	 * @param client
 	 **/
-	public void subscribe(Client client){
+	public void subscribe(Callback_itf cb, int objectHasChanged){
 		try {
-			Callback cb = new Callback(client);
 			this.subscribers.add(cb);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	public void unsubscribe(Callback_itf cb){
+		try {
+			this.subscribers.remove(cb);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

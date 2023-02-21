@@ -1,6 +1,7 @@
 import java.rmi.*;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
+import java.util.Observable;
 import java.net.*;
 
 public class Client extends UnicastRemoteObject implements Client_itf {
@@ -11,6 +12,14 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 	private static Server_itf server;
 	// The instance of the client we send to the server (especially in ordre to make possible eventual callbacks)
 	private static Client_itf client;
+	// Variable that stores the last modified object
+	private static int objectHasChanged = -1;
+	// Create the observable.
+    private static ObjectObservable objObservable;
+    // Create the observers (aka listeners).
+    private static NotifyObserver notificationObserver;
+	private static Callback_itf cb;
+
 	// The instance is only used to have a reference on the client
 	public Client() throws RemoteException {
 		super();
@@ -27,6 +36,11 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		Client.possessedObjects = new HashMap<Integer, SharedObject>();
 		// The same port as in the Server class
 		int port = 4000; 
+		// Initialize the observer for the notification variable
+		objObservable = new ObjectObservable();
+		notificationObserver = new NotifyObserver();
+		objObservable.addObserver(notificationObserver);
+
 		try {
 			String URL = "//" + InetAddress.getLocalHost().getHostName() + ":" + port + "/server";
 			System.out.println("Server found");
@@ -133,6 +147,7 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		Object obj =  null;
 		try {
 			obj = server.lock_write(id, client);
+			Client.unsubscribe(id);
 		} catch (Exception e) {
 			System.err.println("Error during write locking");
 			e.printStackTrace();
@@ -167,9 +182,46 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		return possessedObjects.get(id).invalidate_writer();
 	}
 
+	public static void subscribe(int objectHasChanged, int id) throws java.rmi.RemoteException{
+		cb = new Callback(client, objectHasChanged);
+		server.subscribe(cb, objectHasChanged, id);
+	}
+
+	public static void unsubscribe(int id) throws java.rmi.RemoteException{
+		server.unsubscribe(cb, id);
+	}
+
 	/**
 	 **/
 	public static void notifyPublication(int id) throws java.rmi.RemoteException{
 			server.notifyPublication(id);
 	}
+
+	// Getters and setters
+
+	public int getObjectHasChanged() throws java.rmi.RemoteException{
+		return objectHasChanged;
+	}
+
+	public void setObjectHasChanged(int objHasChanged) throws java.rmi.RemoteException{
+		objectHasChanged = objHasChanged;
+		objObservable.setObjectHasChanged(objectHasChanged);
+	}
+}
+
+class ObjectObservable extends Observable {
+	
+	int objectHasChanged = -1;
+
+	public void setObjectHasChanged(int objectHasChanged) {
+		synchronized (this) {
+		  this.objectHasChanged = objectHasChanged;
+		}
+		setChanged();
+		notifyObservers();
+	}
+	
+	  public synchronized int getObjectHasChanged() {
+		return objectHasChanged;
+	  }
 }
