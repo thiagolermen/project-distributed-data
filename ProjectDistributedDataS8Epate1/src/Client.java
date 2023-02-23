@@ -14,10 +14,13 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 	private static Client_itf client;
 	// Variable that stores the last modified object
 	private static int objectHasChanged = -1;
+	// Variable to store the number of changements in the client
+	private static int changementCounter = 0;
 	// Create the observable.
     private static ObjectObservable objObservable;
     // Create the observers (aka listeners).
     private static NotifyObserver notificationObserver;
+	// Instance for the Callback
 	private static Callback_itf cb;
 
 	// The instance is only used to have a reference on the client
@@ -131,6 +134,7 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		Object obj =  null;
 		try {
 			obj = server.lock_read(id, client);
+			objObservable.setChangementCounter(0);
 		} catch (Exception e) {
 			System.err.println("Error during read locking");
 			e.printStackTrace();
@@ -207,21 +211,39 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		objectHasChanged = objHasChanged;
 		objObservable.setObjectHasChanged(objectHasChanged);
 	}
+
+	public static int getChangementCounter() throws java.rmi.RemoteException{
+		return Client.changementCounter;
+	}
+
+	public static void setChangementCounter(int changementCounter) throws java.rmi.RemoteException{
+		Client.changementCounter = changementCounter;
+	}
 }
 
 class ObjectObservable extends Observable {
 	
 	int objectHasChanged = -1;
+	int changementCounter = 0;
 
 	public void setObjectHasChanged(int objectHasChanged) {
 		synchronized (this) {
 		  this.objectHasChanged = objectHasChanged;
 		}
+		changementCounter++;
 		setChanged();
 		notifyObservers();
 	}
 	
-	  public synchronized int getObjectHasChanged() {
-		return objectHasChanged;
-	  }
+	public synchronized int getObjectHasChanged() {
+	return objectHasChanged;
+	}
+
+	public int getChangementCounter(){
+		return changementCounter;
+	}
+
+	public void setChangementCounter(int c){
+		changementCounter = c;
+	}
 }

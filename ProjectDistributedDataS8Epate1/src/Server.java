@@ -149,8 +149,8 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 		try {
 			synchronized (serverObjects) {
 				so  = this.serverObjects.get(id);
-				so.subscribe(cb, objectHasChanged);
 			}
+			so.subscribe(cb, objectHasChanged);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -162,8 +162,8 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 		try {
 			synchronized (serverObjects) {
 				so  = this.serverObjects.get(id);
-				so.unsubscribe(cb);
 			}
+			so.unsubscribe(cb);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -173,8 +173,11 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 	 *
 	 **/
 	public void notifyPublication(int id) throws RemoteException{
+		ServerObject so = null;
 		try {
-			ServerObject so = serverObjects.get(id);
+			synchronized (serverObjects) {
+				so = serverObjects.get(id);
+			}
 			so.notifySubscribers();
 		} catch (Exception e) {
 			e.printStackTrace();

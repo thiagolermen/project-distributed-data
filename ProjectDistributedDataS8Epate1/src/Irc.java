@@ -1,5 +1,7 @@
 import java.awt.*;
 import java.awt.event.*;
+import java.rmi.RemoteException;
+
 import javax.swing.JOptionPane;
 
 
@@ -80,7 +82,7 @@ class readListener implements ActionListener {
 		
 		// invoke the method
 		String s = ((Sentence)(irc.sentence.obj)).read();
-		
+	
 		// unlock the object
 		irc.sentence.unlock();
 		
@@ -107,8 +109,6 @@ class writeListener implements ActionListener {
 		irc.data.setText("");
 		try {
 			Client.notifyPublication(irc.sentence.getId());
-			//default title and icon
-			//JOptionPane.showMessageDialog(irc, "Object with id " + irc.sentence.getId() + "has been changed.");
 		} catch (Exception exc) {
 			exc.printStackTrace();
 		}

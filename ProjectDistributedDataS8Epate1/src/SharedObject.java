@@ -126,10 +126,10 @@ public class SharedObject implements Serializable, SharedObject_itf {
 			this.state = Lock.RLC;
 			break;
 		case WLT:
-			this.state = Lock.WLC;
+			this.state = Lock.NL;
 			break;
 		case RLT_WLC:
-			this.state = Lock.WLC;
+			this.state = Lock.NL;
 			break;
 		default:
 			break;

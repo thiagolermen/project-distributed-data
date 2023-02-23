@@ -9,6 +9,7 @@ public class NotifyObserver implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 	  int objectHasChanged = ((ObjectObservable) o).getObjectHasChanged();
-	  System.out.println("Client got notification of changement of object " + objectHasChanged);
+	  int changementCounter = ((ObjectObservable) o).getChangementCounter();
+	  System.out.println("Client got notification of changement of object " + objectHasChanged + " - Number of changements: " + changementCounter);
 	}
 }
