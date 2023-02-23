@@ -58,6 +58,14 @@ public class Irc extends Frame {
 		read_button.addActionListener(new readListener(this));
 		add(read_button);
 
+		Button subscribe_button = new Button("subscribe");
+		subscribe_button.addActionListener(new subscribeListener(this));
+		add(subscribe_button);
+
+		Button unsubscribe_button = new Button("unsubscribe");
+		unsubscribe_button.addActionListener(new unsubscribeListener(this));
+		add(unsubscribe_button);
+
 		setSize(470,300);
 		text.setBackground(Color.black); 
 		show();
@@ -115,8 +123,31 @@ class writeListener implements ActionListener {
 		
 		// unlock the object
 		irc.sentence.unlock();
+	}
+}
+
+class subscribeListener implements ActionListener {
+	Irc irc;
+	public subscribeListener (Irc i) {
+		irc = i;
+	}
+	public void actionPerformed (ActionEvent e) {
 		try {
 			Client.subscribe(-1, irc.sentence.getId());
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
+	}
+}
+
+class unsubscribeListener implements ActionListener {
+	Irc irc;
+	public unsubscribeListener (Irc i) {
+		irc = i;
+	}
+	public void actionPerformed (ActionEvent e) {
+		try {
+			Client.unsubscribe(irc.sentence.getId());
 		} catch (Exception exc) {
 			exc.printStackTrace();
 		}
