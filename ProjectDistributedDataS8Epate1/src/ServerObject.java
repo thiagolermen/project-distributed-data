@@ -1,6 +1,7 @@
 import java.io.*;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.Iterator;
 
 public class ServerObject implements Serializable {
 	
@@ -96,7 +97,17 @@ public class ServerObject implements Serializable {
 	 **/
 	public void subscribe(Callback_itf cb, int objectHasChanged){
 		try {
-			this.subscribers.add(cb);
+			Client_itf cl = cb.getClient();
+			Iterator<Callback_itf> iteratorCallback = this.subscribers.iterator();
+			boolean stop = false;
+			while((iteratorCallback.hasNext()) && (!stop)) {
+				if (cl.equals(iteratorCallback.next().getClient())) {
+					stop = true;
+				}
+			}
+			if (!stop) {
+				this.subscribers.add(cb);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -109,6 +120,15 @@ public class ServerObject implements Serializable {
 			e.printStackTrace();
 		}
 	}
+
+	public static HashSet<Callback_itf> setFromIterable(Iterator<Callback_itf> it) {
+		HashSet<Callback_itf> set = new HashSet<Callback_itf>();
+		while (it.hasNext()) {
+			set.add(it.next());
+		}
+		return set;
+	}
+	
 
 	/** Notify all the clients that has subscribed that the current object has been changed
 	 **/

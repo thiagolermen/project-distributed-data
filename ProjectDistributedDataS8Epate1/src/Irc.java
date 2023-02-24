@@ -66,7 +66,7 @@ public class Irc extends Frame {
 		unsubscribe_button.addActionListener(new unsubscribeListener(this));
 		add(unsubscribe_button);
 
-		setSize(470,300);
+		setSize(500,300);
 		text.setBackground(Color.black); 
 		show();
 		
@@ -112,6 +112,12 @@ class writeListener implements ActionListener {
         	// lock the object in write mode
 		irc.sentence.lock_write();
 		
+		try {
+			Client.setChangementCounter(0);
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
+
 		// invoke the method
 		((Sentence)(irc.sentence.obj)).write(Irc.myName+" wrote "+s);
 		irc.data.setText("");
@@ -147,6 +153,7 @@ class unsubscribeListener implements ActionListener {
 	}
 	public void actionPerformed (ActionEvent e) {
 		try {
+			Client.setChangementCounter(0);
 			Client.unsubscribe(irc.sentence.getId());
 		} catch (Exception exc) {
 			exc.printStackTrace();

@@ -134,7 +134,7 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		Object obj =  null;
 		try {
 			obj = server.lock_read(id, client);
-			objObservable.setChangementCounter(0);
+			Client.setChangementCounter(0);
 		} catch (Exception e) {
 			System.err.println("Error during read locking");
 			e.printStackTrace();
@@ -212,11 +212,11 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		objObservable.setObjectHasChanged(objectHasChanged);
 	}
 
-	public static int getChangementCounter() throws java.rmi.RemoteException{
+	public static int getChangementCounter(){
 		return Client.changementCounter;
 	}
 
-	public static void setChangementCounter(int changementCounter) throws java.rmi.RemoteException{
+	public static void setChangementCounter(int changementCounter){
 		Client.changementCounter = changementCounter;
 	}
 }
@@ -224,26 +224,17 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 class ObjectObservable extends Observable {
 	
 	int objectHasChanged = -1;
-	int changementCounter = 0;
 
 	public void setObjectHasChanged(int objectHasChanged) {
 		synchronized (this) {
 		  this.objectHasChanged = objectHasChanged;
 		}
-		changementCounter++;
+		Client.setChangementCounter(Client.getChangementCounter()+1);
 		setChanged();
 		notifyObservers();
 	}
 	
 	public synchronized int getObjectHasChanged() {
 	return objectHasChanged;
-	}
-
-	public int getChangementCounter(){
-		return changementCounter;
-	}
-
-	public void setChangementCounter(int c){
-		changementCounter = c;
 	}
 }
