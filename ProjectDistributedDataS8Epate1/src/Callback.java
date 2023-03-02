@@ -7,8 +7,8 @@ public class Callback extends UnicastRemoteObject implements Callback_itf{
         this.client = client;
     }
 
-    public void notifySubscriber(int object_id) throws RemoteException {
-        this.client.setObjectHasChanged(object_id);
+    public void notifySubscriber(int objectId, Object obj) throws RemoteException {
+        this.client.notificationReception(objectId, obj);
     }
 
     public Client_itf getClient() throws RemoteException {

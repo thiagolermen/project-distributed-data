@@ -16,12 +16,10 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 	private static int objectHasChanged = -1;
 	// Variable to store the number of changements in the client
 	private static int changementCounter = 0;
-	// Create the observable.
-    private static ObjectObservable objObservable;
-    // Create the observers (aka listeners).
-    private static NotifyObserver notificationObserver;
 	// Instance for the Callback
 	private static Callback_itf cb;
+	// List of objects that indicates if the client is subscribed to each of them
+	private static HashMap<Integer, Boolean> isSubscribed;
 
 	// The instance is only used to have a reference on the client
 	public Client() throws RemoteException {
@@ -39,10 +37,6 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 		Client.possessedObjects = new HashMap<Integer, SharedObject>();
 		// The same port as in the Server class
 		int port = 4000; 
-		// Initialize the observer for the notification variable
-		objObservable = new ObjectObservable();
-		notificationObserver = new NotifyObserver();
-		objObservable.addObserver(notificationObserver);
 
 		try {
 			String URL = "//" + InetAddress.getLocalHost().getHostName() + ":" + port + "/server";
@@ -75,6 +69,7 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 				
 				// Adds the object to the map of possesed objects of the client (the create method and more particularly its corresponding instruction will logically not be executed)
 				possessedObjects.put(id, so);
+				isSubscribed.put(id, false);
 				
 			} else {
 				System.err.println("No Object with ID : " + id  + " found in cache");
@@ -114,6 +109,7 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 			so = new SharedObject(id, obj);
 			// Because the corresponding instruction in the lookup method has logically not been executed
 			possessedObjects.put(so.getId(), so);
+			isSubscribed.put(id, false);
 		} catch (Exception e) {
 			System.err.println("Error during shared object creation");
 			e.printStackTrace();
@@ -187,12 +183,17 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 	}
 
 	public static void subscribe(int objectHasChanged, int id) throws java.rmi.RemoteException{
-		cb = new Callback(client, objectHasChanged);
-		server.subscribe(cb, objectHasChanged, id);
+		Callback_itf cbAux = new Callback(client, objectHasChanged);
+		boolean flag = server.subscribe(cbAux, objectHasChanged, id);
+		isSubscribed.put(id, true);
+		if (flag) {
+			cb = cbAux;
+		}
 	}
 
 	public static void unsubscribe(int id) throws java.rmi.RemoteException{
 		server.unsubscribe(cb, id);
+		isSubscribed.put(id, false);
 	}
 
 	/**
@@ -201,16 +202,14 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 			server.notifyPublication(id);
 	}
 
+	public void notificationReception(int objectId, Object obj) throws java.rmi.RemoteException{
+		Client.objectHasChanged = objectId;
+		Client.changementCounter++;
+		Client.possessedObjects.get(objectId).setObj(obj);
+		System.out.println("New object modification detected - Number of ignored updates: " + Client.changementCounter);
+	}
+
 	// Getters and setters
-
-	public int getObjectHasChanged() throws java.rmi.RemoteException{
-		return objectHasChanged;
-	}
-
-	public void setObjectHasChanged(int objHasChanged) throws java.rmi.RemoteException{
-		objectHasChanged = objHasChanged;
-		objObservable.setObjectHasChanged(objectHasChanged);
-	}
 
 	public static int getChangementCounter(){
 		return Client.changementCounter;
@@ -219,22 +218,8 @@ public class Client extends UnicastRemoteObject implements Client_itf {
 	public static void setChangementCounter(int changementCounter){
 		Client.changementCounter = changementCounter;
 	}
-}
 
-class ObjectObservable extends Observable {
-	
-	int objectHasChanged = -1;
-
-	public void setObjectHasChanged(int objectHasChanged) {
-		synchronized (this) {
-		  this.objectHasChanged = objectHasChanged;
-		}
-		Client.setChangementCounter(Client.getChangementCounter()+1);
-		setChanged();
-		notifyObservers();
-	}
-	
-	public synchronized int getObjectHasChanged() {
-	return objectHasChanged;
+	public static HashMap<Integer, Boolean> getIsSubscribed(){
+		return Client.isSubscribed;
 	}
 }

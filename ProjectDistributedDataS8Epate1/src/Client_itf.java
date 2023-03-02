@@ -2,6 +2,5 @@ public interface Client_itf extends java.rmi.Remote {
 	public Object reduce_lock(int id) throws java.rmi.RemoteException;
 	public void invalidate_reader(int id) throws java.rmi.RemoteException;
 	public Object invalidate_writer(int id) throws java.rmi.RemoteException;
-	public int getObjectHasChanged() throws java.rmi.RemoteException;
-	public void setObjectHasChanged(int objHasChanged) throws java.rmi.RemoteException;
+	public void notificationReception(int objectId, Object obj) throws java.rmi.RemoteException;
 }

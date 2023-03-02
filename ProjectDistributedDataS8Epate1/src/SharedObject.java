@@ -3,8 +3,8 @@ import java.io.*;
 public class SharedObject implements Serializable, SharedObject_itf {
 	
 	private Integer id; // The id of the shared object
-	public boolean waiting; // Permits to know if a thread should wait or not (synchronization)
 	public Object obj; // General reference to object of a given application
+	public boolean waiting; // Permits to know if a thread should wait or not (synchronization)
 	public Lock state; // Current lock state of the shared object
 
 	public SharedObject(int id, Object obj){
@@ -126,10 +126,10 @@ public class SharedObject implements Serializable, SharedObject_itf {
 			this.state = Lock.RLC;
 			break;
 		case WLT:
-			this.state = Lock.NL;
+			this.state = Lock.WLC;
 			break;
 		case RLT_WLC:
-			this.state = Lock.NL;
+			this.state = Lock.WLC;
 			break;
 		default:
 			break;
@@ -275,5 +275,13 @@ public class SharedObject implements Serializable, SharedObject_itf {
 	
 	public Lock getState() {
 		return this.state;
+	}
+
+	public void setObj(Object obj) {
+		this.obj = obj;
+	}
+
+	public Object getObj() {
+		return this.obj;
 	}
 }

@@ -143,16 +143,17 @@ public class Server extends UnicastRemoteObject implements Server_itf {
 		return obj;
 	}
 
-	public void subscribe(Callback_itf cb, int objectHasChanged, int id) throws RemoteException{
+	public boolean subscribe(Callback_itf cb, int objectHasChanged, int id) throws RemoteException{
 
 		ServerObject so = null;
 		try {
 			synchronized (serverObjects) {
 				so  = this.serverObjects.get(id);
 			}
-			so.subscribe(cb, objectHasChanged);
+			return so.subscribe(cb, objectHasChanged);
 		} catch (Exception e) {
 			e.printStackTrace();
+			return false;
 		}
 	}
 

@@ -95,11 +95,11 @@ public class ServerObject implements Serializable {
 	/** Subscribe a client to the object adding a callback referencing the current object to the client
 	 * @param client
 	 **/
-	public void subscribe(Callback_itf cb, int objectHasChanged){
+	public boolean subscribe(Callback_itf cb, int objectHasChanged){
+		boolean stop = false;
 		try {
 			Client_itf cl = cb.getClient();
 			Iterator<Callback_itf> iteratorCallback = this.subscribers.iterator();
-			boolean stop = false;
 			while((iteratorCallback.hasNext()) && (!stop)) {
 				if (cl.equals(iteratorCallback.next().getClient())) {
 					stop = true;
@@ -111,11 +111,14 @@ public class ServerObject implements Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		return !stop;
 	}
 
 	public void unsubscribe(Callback_itf cb){
 		try {
+			System.out.println("\navant remove " + this.subscribers.size());
 			this.subscribers.remove(cb);
+			System.out.println("après remove " + this.subscribers.size() + "\n");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -135,7 +138,7 @@ public class ServerObject implements Serializable {
 	public void notifySubscribers(){
 		for (Callback_itf cb : subscribers) {
 			try {
-				cb.notifySubscriber(this.id);
+				cb.notifySubscriber(this.id, this.obj);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
